@@ -92,10 +92,12 @@ for i, (gs, ps, audio) in enumerate(generator):
 Polish uses eSpeak-based G2P and can be selected with `lang_code='pl'` (or the
 canonical short code `'l'`). Kokoro-82M does not include a Polish-trained
 voice, so Polish output is non-native and must use one of the existing voices.
+This fork recommends `jf_alpha` and uses it by default when the CLI is invoked
+with `-l l` and no explicit `--voice`.
 
 ```py
 pipeline = KPipeline(lang_code='pl')
-generator = pipeline('Zażółć gęślą jaźń.', voice='af_heart')
+generator = pipeline('Zażółć gęślą jaźń.', voice='jf_alpha')
 ```
 
 ### Windows Installation
