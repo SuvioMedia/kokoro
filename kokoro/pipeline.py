@@ -15,6 +15,8 @@ ALIASES = {
     'fr-fr': 'f',
     'hi': 'h',
     'it': 'i',
+    'pl': 'l',
+    'pl-pl': 'l',
     'pt-br': 'p',
     'ja': 'j',
     'zh': 'z',
@@ -30,6 +32,7 @@ LANG_CODES = dict(
     f='fr-fr',
     h='hi',
     i='it',
+    l='pl',
     p='pt-br',
 
     # pip install misaki[ja]
@@ -38,6 +41,25 @@ LANG_CODES = dict(
     # pip install misaki[zh]
     z='Mandarin Chinese',
 )
+
+
+class PolishG2P(espeak.EspeakG2P):
+    """Adapt eSpeak's Polish IPA to phonemes available in Kokoro-82M."""
+
+    PHONEME_REPLACEMENTS = (
+        ('dʑ', 'ʥ'),
+        ('tɕ', 'ʨ'),
+        ('ʑ', 'ʒ'),
+    )
+
+    def __init__(self):
+        super().__init__(language='pl')
+
+    def __call__(self, text: str) -> Tuple[str, None]:
+        phonemes, _ = super().__call__(text)
+        for source, target in self.PHONEME_REPLACEMENTS:
+            phonemes = phonemes.replace(source, target)
+        return phonemes, None
 
 class KPipeline:
     '''
@@ -138,6 +160,9 @@ class KPipeline:
             except ImportError:
                 logger.error("You need to `pip install misaki[zh]` to use lang_code='z'")
                 raise
+        elif lang_code == 'l':
+            logger.warning("Polish support is non-native because Kokoro-82M has no Polish-trained voice.")
+            self.g2p = PolishG2P()
         else:
             language = LANG_CODES[lang_code]
             logger.warning(f"Using EspeakG2P(language='{language}'). Chunking logic not yet implemented, so long texts may be truncated unless you split them with '\\n'.")

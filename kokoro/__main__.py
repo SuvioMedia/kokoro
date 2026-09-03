@@ -27,6 +27,7 @@ languages = [
     "e",  # Spanish
     "f",  # French
     "i",  # Italian
+    "l",  # Polish (non-native)
     "p",  # Brazilian Portuguese
     "j",  # Japanese
     "z",  # Mandarin Chinese
