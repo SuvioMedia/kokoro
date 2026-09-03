@@ -43,6 +43,7 @@ import torch
 # 🇫🇷 'f' => French fr-fr
 # 🇮🇳 'h' => Hindi hi
 # 🇮🇹 'i' => Italian it
+# 🇵🇱 'l' or 'pl' => Polish pl (non-native)
 # 🇯🇵 'j' => Japanese: pip install misaki[ja]
 # 🇧🇷 'p' => Brazilian Portuguese pt-br
 # 🇨🇳 'z' => Mandarin Chinese: pip install misaki[zh]
@@ -84,6 +85,17 @@ for i, (gs, ps, audio) in enumerate(generator):
     print(ps) # ps => phonemes
     display(Audio(data=audio, rate=24000, autoplay=i==0))
     sf.write(f'{i}.wav', audio, 24000) # save each audio file
+```
+
+### Polish (non-native)
+
+Polish uses eSpeak-based G2P and can be selected with `lang_code='pl'` (or the
+canonical short code `'l'`). Kokoro-82M does not include a Polish-trained
+voice, so Polish output is non-native and must use one of the existing voices.
+
+```py
+pipeline = KPipeline(lang_code='pl')
+generator = pipeline('Zażółć gęślą jaźń.', voice='af_heart')
 ```
 
 ### Windows Installation
