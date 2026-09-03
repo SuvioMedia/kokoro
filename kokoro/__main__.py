@@ -15,7 +15,7 @@ espeak not installed: `apt-get install espeak-ng`
 import argparse
 import wave
 from pathlib import Path
-from typing import Generator, TYPE_CHECKING
+from typing import Generator, Optional, Tuple, TYPE_CHECKING
 
 import numpy as np
 from loguru import logger
@@ -33,8 +33,21 @@ languages = [
     "z",  # Mandarin Chinese
 ]
 
+DEFAULT_VOICE = "af_heart"
+LANGUAGE_DEFAULT_VOICES = {
+    "l": "jf_alpha",
+}
+
 if TYPE_CHECKING:
     from kokoro import KPipeline
+
+
+def resolve_language_and_voice(
+    language: Optional[str], voice: Optional[str]
+) -> Tuple[str, str]:
+    voice = voice or LANGUAGE_DEFAULT_VOICES.get(language, DEFAULT_VOICE)
+    language = language or voice[0]
+    return language, voice
 
 
 def generate_audio(
@@ -71,8 +84,7 @@ def main() -> None:
     parser.add_argument(
         "-m",
         "--voice",
-        default="af_heart",
-        help="Voice to use",
+        help="Voice to use (defaults to jf_alpha for Polish, af_heart otherwise)",
     )
     parser.add_argument(
         "-l",
@@ -117,7 +129,7 @@ def main() -> None:
         logger.level("DEBUG")
     logger.debug(args)
 
-    lang = args.language or args.voice[0]
+    lang, voice = resolve_language_and_voice(args.language, args.voice)
 
     if args.text is not None and args.input_file is not None:
         raise Exception("You cannot specify both 'text' and 'input_file'")
@@ -140,7 +152,7 @@ def main() -> None:
         output_file=out_file,
         text=text,
         kokoro_language=lang,
-        voice=args.voice,
+        voice=voice,
         speed=args.speed,
     )
 
